@@ -11,26 +11,27 @@ class System(object):
     '''
 
     def __init__(self, name, l):
-        '''
-        Constructor
-        '''
-        # System id
-        # Number of Servers
-        # Server Ids
-        # list of Servers
+        '''  Constructor  '''
         self.id = name
         self.servers = {}
         for serverId in l:
             s = Server(serverId)
             s.create_server(serverId)
             self.servers.update({serverId: s})
-#        print self.servers
     
     def deploy(self,serverId):
         s = Server(serverId)
         s.create_server(serverId)
         self.servers.update({serverId: s})
     
+    def remove(self, serverId):
+        value = self.servers.get(serverId)
+        value.a.send('remove')
+        if value.a.recv() != 'removed':
+            print 'not removed'
+            return None
+        del self.servers[serverId]
+
     def check(self):
         for key,value in self.servers.iteritems():
             if value.p.is_alive() == False:
@@ -39,12 +40,10 @@ class System(object):
             print "server alive ", key
         return True
 
-    def remove(self, serverId):
-        # create
-        # destroy
+    def echo_command(self, serverId, l):
         value = self.servers.get(serverId)
-        value.q.put('remove')
-#        print value
-        del self.servers[serverId]
-        #print self.servers
+        value.a.send(l)
+        d = value.a.recv()
+        print d
+        return d
         

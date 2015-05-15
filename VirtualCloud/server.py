@@ -3,7 +3,7 @@ Created on May 15, 2015
 
 @author: dragan
 '''
-from multiprocessing import Process, Queue
+from multiprocessing import Process, Pipe
 class Server(object):
     '''
     classdocs
@@ -15,15 +15,16 @@ class Server(object):
     def f(self):
         print "process running", self.port
         while True:
-            data = self.q.get()
+            data = self.b.recv()
             if data == 'remove':
+                self.b.send('removed')
                 return 1
             else:
-                print data
+                self.b.send(data)
 
    
     def create_server(self, port):
-        self.q = Queue()
+        self.a,self.b = Pipe()
         self.port = port
         self.p = Process(target=self.f)
         self.p.start()
