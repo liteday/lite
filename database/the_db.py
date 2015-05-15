@@ -17,7 +17,11 @@ class TheSystemsDb(object):
 
     def _no_tables_exist(self):
         '''check to see if tables already exist'''
-        return False
+        self.cursr.execute("SELECT name FROM sqlite_master WHERE type='table'")
+        if self.cursr.fetchone() is None:
+            return True
+        else:
+            return False
 
     def get_all_systems(self):
         '''get all system table entries and their servers and return as a dictionary'''
