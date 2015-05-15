@@ -22,11 +22,13 @@ class TheSystemsDb(object):
     def get_all_systems(self):
         '''get all system table entries and their servers and return as a dictionary'''
         
-    def load_systems(self):
+    def load_systems(self, system_dict):
         '''get all system table entries and their servers and return as a dictionary'''
-        self._insert_system_table_entry(('ts1',))
-        self._insert_server_table_entry(("ts1","localhost:2001","ts1:michael",))
-        self._insert_server_table_entry(("ts1","localhost:2002","ts1:clark",))
+        for sys in system_dict.keys():
+            self._insert_system_table_entry((sys,))
+            for server_dict in system_dict.values():
+                for serv in server_dict.items():
+                    self._insert_server_table_entry((sys,serv[0],serv[1]))
                 
     def _insert_system_table_entry(self,cols):
         ''' Insert a row of data '''
