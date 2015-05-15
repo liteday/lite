@@ -1,8 +1,9 @@
 __author__ = 'root'
-
+import sys
 import lxml
+import database
 from lxml import etree
-from the_db import TheSystemsDb
+from database.the_db import TheSystemsDb
 import argparse
 
 servername=""
@@ -15,9 +16,10 @@ args = parser.parse_args()
 
 
 def parse_xml(filename):
+    servername=""
+    address=""
     xmlDictionary={}
     tree=etree.parse(filename)
-    print "Parsing xmlfile " + filename
     for element in tree.iter():
         if element.tag == "system":
             for name, value in element.items():
@@ -43,8 +45,16 @@ def clear_tables():
 
 
 if __name__ == "__main__":
+
+    if args.filename == None or args.filename =="":
+        print "No filename given.. exiting.."
+        sys.exit()
+
     print "Parsing file " + args.filename
     xml_dict=parse_xml(args.filename)
+    print "********************"
+    print xml_dict
+    print "******************"
     if args.cleardb == "True":
         print "clearing tables"
         clear_tables()
