@@ -1,14 +1,14 @@
-import VirtualCloud.system as system
+import system
 
 class Coordinator(object):
     
     def __init__(self):
         self.systems = {}
     
-    def check_system(self,sys_name):
+    def check_system(self, sys_name, serv_name):
         # validate ID?
         sys = self.systems[sys_name]
-        return sys.check()        
+        return sys.check(serv_name)        
     
     def deploy_system(self,config):
         sys = system.System(config["name"], config["servers"])
@@ -32,5 +32,5 @@ if __name__ == '__main__':
     # test methods here
     coord = Coordinator()
     coord.deploy_system(dummy_data)
-    coord.check_system("ts1")
+    coord.check_system("ts1", "localhost:2002")
     coord.end_system("ts1")
