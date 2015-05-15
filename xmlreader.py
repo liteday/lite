@@ -11,7 +11,7 @@ address=""
 
 parser=argparse.ArgumentParser(description="xmlreader")
 parser.add_argument('-c', '--cleardb', action='store_true')
-parser.add_argument('-f', '--filename', action='store')
+parser.add_argument('filename')
 args = parser.parse_args()
 
 
@@ -46,17 +46,9 @@ def clear_tables():
 
 if __name__ == "__main__":
 
-    if args.filename == None or args.filename =="":
-        print "No filename given.. exiting.."
-        sys.exit()
-
     print "Parsing file " + args.filename
     xml_dict=parse_xml(args.filename)
-    print "********************"
-    print xml_dict
-    print "******************"
-    if args.cleardb == "True":
+    if args.cleardb:
         print "clearing tables"
         clear_tables()
-    print "Populating database"
     populate_database(xml_dict)
