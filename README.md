@@ -1,1 +1,3 @@
-# lite
+# LITE
+
+The LITE system!
