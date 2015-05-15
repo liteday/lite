@@ -1,45 +1,36 @@
-import Queue
-import task
-import threading
+import system
 
 class Coordinator(object):
     
     def __init__(self):
-        self.management_queue = Queue.Queue(10)        
-
-    def run(self):
-        self.run_worker()
-        
-    def check_system(sys_id=0):
+        self.systems = {}
+    
+    def check_system(self, sys_name, serv_name):
         # validate ID?
-        self.management_queue.put(task.CheckTask(sys_id))        
-
+        sys = self.systems[sys_name]
+        return sys.check(serv_name)        
+    
     def deploy_system(self,config):
-        self.management_queue.put(task.DeployTask(config))
+        sys = system.System(config["name"], config["servers"])
+        for serv in sys.servers:
+            sys.deploy(serv)
+        self.systems[config["name"]] = sys
+        return "Deploying"
 
-    def run_worker(self):
-        self.worker_thread = threading.Thread(target=self.worker)
-        self.worker_thread.daemon = True
-        self.worker_thread.start()
-
-    def process(self,item):
-        print type(item)
-        
-    def worker(self):
-        while True:
-            print "In run"        
-            try:
-                self.process(self.management_queue.get(block=False))
-            except Exception as e:
-                print "worker failed, ",str(e)
-                return
+    def end_system(self,sys):
+        sys = self.systems[sys]
+        servers = [ s for s in sys.servers.iteritems() ]
+        print servers
+        for serv in servers:
+            print "Server for removal: ",serv
+            sys.remove(serv[0])
+        return True
             
-    def end(self):
-        self.worker_thread.exit()
-        
 if __name__ == '__main__':
+    dummy_data = {"name" :"ts1",
+                  "servers" : [ "localhost:2002" ] }
     # test methods here
     coord = Coordinator()
-    coord.deploy_system("This is my Config")
-    coord.deploy_system("configuration")
-    coord.run()
+    coord.deploy_system(dummy_data)
+    coord.check_system("ts1", "localhost:2002")
+    coord.end_system("ts1")
