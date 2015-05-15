@@ -36,7 +36,7 @@ class TheSystemsDb(object):
             for server_name, ip in self.cursr.execute(
                             'SELECT DISTINCT server_name, server_address FROM server WHERE system_name=?', sys):
                 server_dict[server_name]=ip
-            system_dict[sys]=server_dict
+            system_dict[sys[0]]=server_dict
             #print sys, server_dict
         print system_dict
         return system_dict
