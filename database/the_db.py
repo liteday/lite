@@ -26,12 +26,7 @@ class TheSystemsDb(object):
     def get_all_systems(self):
         '''get all system table entries and their servers and return as a dictionary'''
         system_dict={}
-        sys_list=[]
         for sys in self.conn.execute('SELECT DISTINCT system_name FROM system'):
-            sys_list.append(sys)
-        #print sys_list
-
-        for sys in sys_list:
             server_dict={}
             for server_name, ip in self.cursr.execute(
                             'SELECT DISTINCT server_name, server_address FROM server WHERE system_name=?', sys):
