@@ -8,8 +8,9 @@ class TheSystemsDb(object):
         self.db_name = 'test_system_databse.db'
         self.conn = sqlite3.connect(self.db_name)
         self.cursr = self.conn.cursor()
+        self._create_tables()
         
-    def create_tables(self):
+    def _create_tables(self):
         '''create system and server tables if they don't exist'''
         if self._no_tables_exist():
             self.cursr.execute('''CREATE TABLE system (system_name)''')
