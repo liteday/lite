@@ -1,56 +1,62 @@
 __author__ = 'root'
-
+import sys
 import lxml
+import database
 from lxml import etree
+from database.the_db import TheSystemsDb
+import argparse
 
-#variables
-filename="demo.xml"
+servername=""
+address=""
 
-#parse xml
-tree=etree.parse(filename)
-#print etree.tostring(tree)
-
-print type(tree)
-
-xmlDictionary={}
-xmlDictionary["system"]={}
-
-current_system_name=""
-
-for element in tree.iter():
-    #print type(element)
-    #print element.tag
-    if element.tag == "system":
-        #print "system"
-        for name, value in element.items():
-            current_system_name=value
-            xmlDictionary["system"][value]={}
-            print "name " + name
-            print "value " + value
-            #rint (name,value)
-
-            for child in element:
-                 for name, value in child.items():
-                     xmlDictionary["system"][name]=value
-
-print xmlDictionary
+parser=argparse.ArgumentParser(description="xmlreader")
+parser.add_argument('-c', '--cleardb', action='store_true')
+parser.add_argument('-f', '--filename', action='store')
+args = parser.parse_args()
 
 
-# "DELETE * from serve"r
+def parse_xml(filename):
+    servername=""
+    address=""
+    xmlDictionary={}
+    tree=etree.parse(filename)
+    for element in tree.iter():
+        if element.tag == "system":
+            for name, value in element.items():
+                current_system_name=value
+                xmlDictionary[value]={}
+                for child in element:
+                    for child2 in child.items():
+                        if child2[0] == "name" :
+                            servername=child2[1]
+                        elif child2[0] == "addr":
+                            address=child2[1]
+                        xmlDictionary[current_system_name][servername]=address
+    return xmlDictionary
 
-#option to wipe the database (via command line arguments)
-#argparse
 
-# reader.py demo.xml
-#
-# reader.py --create demo.xml
-#
-# reader.py -c demo.xml
+def populate_database(xmldict):
+    test_database = TheSystemsDb()
+    test_database.load_systems(xmldict)
 
-#sql strings
-#sql_delete_system_table="DELETE * FROM system"
-#sql_delete_server_table="DELETE * FROM server"
+def clear_tables():
+    test_database = TheSystemsDb()
+    test_database.clear_tables()
 
-#INSERT INTO system (name) VALUES (systemnamevalue)
-#INSER INTO server (address, name) VALUES (addressvalue, servernamevalue)
 
+if __name__ == "__main__":
+
+    if args.filename == None or args.filename =="":
+        print "No filename given.. exiting.."
+        sys.exit()
+
+    print "Parsing file " + args.filename
+    xml_dict=parse_xml(args.filename)
+    print "********************"
+    print xml_dict
+    print "******************"
+    if args.cleardb == "True":
+        print "clearing tables"
+        clear_tables()
+    print "Populating database"
+    populate_database(xml_dict)
