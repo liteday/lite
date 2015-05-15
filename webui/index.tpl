@@ -6,15 +6,15 @@
 
 <body>
     <script>
-    function check_system(name)
+    function check_server(system, server)
     {
         function callback(result)
         {
-            $('#' + name + '_status').css('background-color', result).css('padding', '0px 5px 0px 5px').css('border-radius', '5px')
+            $('#' + system + '_' + server + '_status').css('background-color', result).css('padding', '0px 5px 0px 5px').css('border-radius', '5px')
         }
         $.ajax(
         {
-            url: 'check/' + name,
+            url: 'check/' + system + '/' + server,
             success: callback,
         })
     }
@@ -32,14 +32,14 @@
     % for system in systems:
         <li>
         ${system}
-        <a href="check/${system}" onclick="check_system('${system}'); return false;">check</a>
-        <span id="${system}_status">&nbsp;</span>
-        |
         <a href="deploy/${system}" onclick="deploy_system('${system}'); return false;">deploy</a>
         </li>
         % for server in systems[system]:
             <ul>
-                <li>${server} | ${systems[system][server]}</li>
+                <li>${server} | ${systems[system][server]} |
+                <a href="check/${system}/${server}" onclick="check_server('${system}', '${systems[system][server]}'); return false;">check</a>
+                <span id="${system}_${server}_status">&nbsp;</span>
+                </li>
                 <br>
             </ul>
         % endfor
