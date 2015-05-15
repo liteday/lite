@@ -33,12 +33,12 @@ class TheSystemsDb(object):
             for server_dict in system_dict.values():
                 if type(server_dict) is not dict:
                     raise Exception('load_systems invalid server dict: {0}'.format(server_dict))
-                for serv in server_dict.items():
-                    if type(serv[0]) is not str:
-                        raise Exception('load_systems invalid server name: {0}'.format(serv[0]))
-                    if type(serv[1]) is not str:
-                        raise Exception('load_systems invalid server ip: {0}'.format(serv[1]))
-                    self._insert_server_table_entry((sys,serv[0],serv[1]))
+                for server_name, ip in server_dict.items():
+                    if type(server_name) is not str:
+                        raise Exception('load_systems invalid server name: {0}'.format(server_name))
+                    if type(ip) is not str:
+                        raise Exception('load_systems invalid server ip: {0}'.format(ip))
+                    self._insert_server_table_entry((sys,server_name,ip))
                 
     def _insert_system_table_entry(self,cols):
         ''' Insert a row of data '''
