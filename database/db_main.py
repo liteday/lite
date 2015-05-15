@@ -7,7 +7,6 @@ from the_db import TheSystemsDb
 
 if __name__ == '__main__':
     test_database = TheSystemsDb()
-    test_database.create_tables()
     test_database.clear_tables()
 
     #test_database.load_systems({1:'val'})
