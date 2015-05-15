@@ -8,8 +8,9 @@ class TheSystemsDb(object):
         self.db_name = 'test_system_databse.db'
         self.conn = sqlite3.connect(self.db_name)
         self.cursr = self.conn.cursor()
+        self._create_tables()
         
-    def create_tables(self):
+    def _create_tables(self):
         '''create system and server tables if they don't exist'''
         if self._no_tables_exist():
             self.cursr.execute('''CREATE TABLE system (system_name)''')
@@ -25,18 +26,14 @@ class TheSystemsDb(object):
 
     def get_all_systems(self):
         '''get all system table entries and their servers and return as a dictionary'''
+        self.cursr2 = self.conn.cursor()
         system_dict={}
-        sys_list=[]
         for sys in self.conn.execute('SELECT DISTINCT system_name FROM system'):
-            sys_list.append(sys)
-        #print sys_list
-
-        for sys in sys_list:
             server_dict={}
-            for server_name, ip in self.cursr.execute(
+            for server_name, ip in self.cursr2.execute(
                             'SELECT DISTINCT server_name, server_address FROM server WHERE system_name=?', sys):
                 server_dict[server_name]=ip
-            system_dict[sys]=server_dict
+            system_dict[sys[0]]=server_dict
             #print sys, server_dict
         print system_dict
         return system_dict
