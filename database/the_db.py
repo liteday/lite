@@ -21,6 +21,14 @@ class TheSystemsDb(object):
 
     def get_all_systems(self):
         '''get all system table entries and their servers and return as a dictionary'''
+        server_dict={}
+        system_dict={}
+        for sys in self.cursr.execute('SELECT system_name FROM system'):
+            for server_name, ip in self.cursr.execute('SELECT server_name, server_address FROM server'):
+                server_dict[server_name]=ip
+            system_dict[sys]=server_dict
+        print system_dict
+        return system_dict
         
     def load_systems(self, system_dict):
         '''get all system table entries and their servers and return as a dictionary'''
@@ -38,7 +46,7 @@ class TheSystemsDb(object):
                         raise Exception('load_systems invalid server name: {0}'.format(server_name))
                     if type(ip) is not str:
                         raise Exception('load_systems invalid server ip: {0}'.format(ip))
-                    self._insert_server_table_entry((sys,server_name,ip))
+                    self._insert_server_table_entry((sys,ip,server_name))
                 
     def _insert_system_table_entry(self,cols):
         ''' Insert a row of data '''
